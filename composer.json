@@ -1,0 +1,9 @@
+{
+  "name": "nicolabs91/glpi-assetlabel",
+  "description": "Print clear labels and QR codes directly from GLPI assets",
+  "type": "glpi-plugin",
+  "license": "GPL-3.0-or-later",
+  "require": {
+    "php": ">=8.2"
+  }
+}

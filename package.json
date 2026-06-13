@@ -1,0 +1,14 @@
+{
+  "name": "glpi-assetlabel-tests",
+  "private": true,
+  "scripts": {
+    "test:e2e": "node tests/e2e/asset_label_checkpoint.js && node tests/e2e/accessibility_checkpoint.js",
+    "test:firefox": "BROWSER=firefox npm run test:e2e"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "jsqr": "^1.4.0",
+    "playwright": "1.59.1",
+    "pngjs": "^7.0.0"
+  }
+}

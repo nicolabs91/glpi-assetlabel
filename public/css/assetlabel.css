@@ -1,0 +1,126 @@
+.assetlabel-form-action {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.75rem 1rem;
+}
+
+.assetlabel-tab {
+  max-width: 760px;
+}
+
+.assetlabel-tab-summary {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.assetlabel-preview-stage {
+  align-items: center;
+  background: #eef1f4;
+  display: flex;
+  justify-content: center;
+  min-height: 430px;
+  overflow: auto;
+  padding: 2rem;
+}
+
+.assetlabel-label {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #111827;
+  box-sizing: border-box;
+  color: #111827;
+  display: flex;
+  gap: 2mm;
+  height: var(--assetlabel-height);
+  overflow: hidden;
+  padding: 2mm;
+  width: var(--assetlabel-width);
+}
+
+.assetlabel-qr {
+  flex: 0 0 auto;
+  height: calc(var(--assetlabel-height) - 4mm);
+  max-height: 27mm;
+  max-width: 27mm;
+  object-fit: contain;
+  width: calc(var(--assetlabel-height) - 4mm);
+}
+
+.assetlabel-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.assetlabel-name {
+  font-size: 10pt;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1mm;
+  overflow-wrap: anywhere;
+}
+
+.assetlabel-field {
+  display: grid;
+  font-size: 7pt;
+  grid-template-columns: minmax(14mm, auto) 1fr;
+  line-height: 1.15;
+}
+
+.assetlabel-field span {
+  color: #4b5563;
+  padding-right: 1mm;
+}
+
+.assetlabel-field strong {
+  overflow-wrap: anywhere;
+}
+
+.assetlabel-empty {
+  color: #6b7280;
+  font-size: 8pt;
+}
+
+@media print {
+  body {
+    background: #fff !important;
+  }
+
+  body > :not(.page),
+  .assetlabel-toolbar,
+  .assetlabel-controls,
+  .assetlabel-screen-only,
+  header,
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  .page,
+  .page-wrapper,
+  .page-body,
+  .container-xl,
+  .assetlabel-page,
+  .assetlabel-workspace,
+  .assetlabel-preview-card,
+  .assetlabel-preview-card .card-body,
+  .assetlabel-preview-stage {
+    background: #fff !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    display: block !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  .assetlabel-workspace > .col-xl-8 {
+    padding: 0 !important;
+    width: auto !important;
+  }
+
+  .assetlabel-label {
+    border: 0;
+    margin: 0;
+  }
+}
