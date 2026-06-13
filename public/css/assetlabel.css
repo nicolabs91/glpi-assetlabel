@@ -23,9 +23,9 @@
   background: #eef1f4;
   display: flex;
   justify-content: center;
-  min-height: 430px;
+  min-height: 210px;
   overflow: auto;
-  padding: 2rem;
+  padding: 1.25rem;
 }
 
 .assetlabel-label {

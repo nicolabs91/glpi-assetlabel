@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 - 2026-06-13
+
+- Reduce the preview stage height and padding without changing printed label
+  dimensions.
+
 ## 0.1.1 - 2026-06-13
 
 - Replace the large form action with a compact print icon beside the asset name.
