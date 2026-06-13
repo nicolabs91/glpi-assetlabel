@@ -22,7 +22,7 @@ $width = rtrim(rtrim(number_format($options['width'], 2, '.', ''), '0'), '.');
 $height = rtrim(rtrim(number_format($options['height'], 2, '.', ''), '0'), '.');
 
 Html::header(__('Asset label', 'assetlabel'), $_SERVER['PHP_SELF'], 'assets');
-echo '<style>';
+echo '<style id="assetlabel-page-size">';
 echo ':root{--assetlabel-width:' . htmlescape($width) . 'mm;--assetlabel-height:' .
     htmlescape($height) . 'mm}';
 echo '@media print{@page{size:' . htmlescape($width) . 'mm ' . htmlescape($height) .
@@ -42,7 +42,7 @@ echo '</div>';
 echo "<div class='row g-3 assetlabel-workspace'>";
 echo "<div class='col-xl-4 assetlabel-controls'><section class='card'><div class='card-body'>";
 echo '<h2 class="h4">' . htmlescape(__('Label settings', 'assetlabel')) . '</h2>';
-echo "<form method='get'>";
+echo "<form id='assetlabel-settings' method='get'>";
 echo Html::hidden('itemtype', ['value' => $itemtype]);
 echo Html::hidden('items_id', ['value' => $itemsId]);
 echo Html::hidden('submitted', ['value' => 1]);
@@ -95,38 +95,41 @@ echo "<input class='form-check-input' type='checkbox' name='qr' value='1'" .
     ($options['qr'] ? ' checked' : '') . '>';
 echo "<span class='form-check-label'>" .
     htmlescape(__('QR code to this GLPI asset', 'assetlabel')) . '</span></label>';
-echo "<button class='btn btn-secondary w-100' type='submit'>" .
-    htmlescape(__('Update preview', 'assetlabel')) . '</button>';
+echo "<p class='small text-muted mb-0'>" .
+    htmlescape(__('The preview updates automatically.', 'assetlabel')) . '</p>';
+echo "<noscript><button class='btn btn-secondary w-100 mt-3' type='submit'>" .
+    htmlescape(__('Update preview', 'assetlabel')) . '</button></noscript>';
 Html::closeForm();
 echo '</div></section></div>';
 
 echo "<div class='col-xl-8'><section class='card assetlabel-preview-card'><div class='card-body'>";
 echo '<h2 class="h4 assetlabel-screen-only">' . htmlescape(__('Preview', 'assetlabel')) . '</h2>';
 echo "<div class='assetlabel-preview-stage'><article class='assetlabel-label'>";
-if ($options['qr']) {
-    echo "<img class='assetlabel-qr' alt='" .
-        htmlescape(__('QR code to this GLPI asset', 'assetlabel')) . "' src='" .
-        htmlescape(PluginAssetlabelLabel::getQrDataUri($assetUrl)) . "'>";
-}
+echo "<img class='assetlabel-qr" . ($options['qr'] ? '' : ' d-none') . "' alt='" .
+    htmlescape(__('QR code to this GLPI asset', 'assetlabel')) . "' src='" .
+    htmlescape(PluginAssetlabelLabel::getQrDataUri($assetUrl)) . "'>";
 echo "<div class='assetlabel-content'>";
 $rendered = 0;
-foreach ($options['fields'] as $field) {
+foreach (array_keys($fieldLabels) as $field) {
     $value = $details[$field] ?? '';
     if ($value === '') {
         continue;
     }
+    $hidden = in_array($field, $options['fields'], true) ? '' : ' d-none';
     if ($field === 'name') {
-        echo "<div class='assetlabel-name'>" . htmlescape($value) . '</div>';
+        echo "<div class='assetlabel-name" . $hidden . "' data-assetlabel-field='" .
+            htmlescape($field) . "'>" . htmlescape($value) . '</div>';
     } else {
-        echo "<div class='assetlabel-field'><span>" . htmlescape($fieldLabels[$field]) .
+        echo "<div class='assetlabel-field" . $hidden . "' data-assetlabel-field='" .
+            htmlescape($field) . "'><span>" . htmlescape($fieldLabels[$field]) .
             '</span><strong>' . htmlescape($value) . '</strong></div>';
     }
-    $rendered++;
+    if ($hidden === '') {
+        $rendered++;
+    }
 }
-if ($rendered === 0) {
-    echo "<div class='assetlabel-empty'>" .
+echo "<div class='assetlabel-empty" . ($rendered === 0 ? '' : ' d-none') . "'>" .
         htmlescape(__('Select at least one available field.', 'assetlabel')) . '</div>';
-}
 echo '</div></article></div>';
 echo "<p class='small text-muted mt-3 mb-0 assetlabel-screen-only'>" .
     htmlescape(__('The QR code opens the asset in GLPI. Normal login and asset permissions still apply.', 'assetlabel')) .

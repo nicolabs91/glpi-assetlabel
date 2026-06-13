@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 - 2026-06-13
+
+- Update fields, QR visibility, dimensions, print page size, and the shareable
+  settings URL immediately without a page reload.
+- Keep a no-JavaScript submit fallback.
+
 ## 0.1.3 - 2026-06-13
 
 - Make the preview card follow the selected label width instead of filling the

@@ -61,19 +61,20 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await page.uncheck('input[name="serial"]');
   await page.check('input[name="type"]');
   await page.selectOption('select[name="format"]', '50x25');
-  await page.locator('button[type="submit"]', { hasText: 'Update preview' }).click();
-  await page.waitForLoadState('networkidle');
+  await page.waitForFunction(() => (
+    location.search.includes('format=50x25')
+    && document.querySelector('#assetlabel-page-size')?.textContent.includes('50mm 25mm')
+  ));
   const changedText = await page.locator('.assetlabel-label').innerText();
   const printCss = await page.locator('#page style').innerText();
+  const liveUrl = page.url();
 
   await page.selectOption('select[name="format"]', 'custom');
   await page.fill('input[name="width"]', '80');
   await page.fill('input[name="height"]', '40');
   await page.uncheck('input[name="qr"]');
-  await page.locator('button[type="submit"]', { hasText: 'Update preview' }).click();
-  await page.waitForLoadState('networkidle');
   const customCss = await page.locator('#page style').innerText();
-  const qrCount = await page.locator('.assetlabel-qr').count();
+  const qrVisible = await page.locator('.assetlabel-qr').isVisible();
 
   await page.goto(
     `${baseUrl}/plugins/assetlabel/front/label.php?itemtype=Computer`
@@ -125,9 +126,11 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     changed_fields_apply:
       changedText.includes('Computer') && !changedText.includes(serial),
     print_size_updates: printCss.includes('@page{size:50mm 25mm'),
+    preview_updates_without_reload:
+      liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
     custom_size_updates: customCss.includes('@page{size:80mm 40mm'),
     custom_size_is_bounded: boundedCss.includes('@page{size:150mm 10mm'),
-    qr_can_be_disabled: qrCount === 0,
+    qr_can_be_disabled: !qrVisible,
     print_view_is_clean: printView.labelVisible && !printView.toolbarVisible,
     invalid_item_rejected: invalid.status() >= 400,
     cleanup_status: cleanup.status(),
