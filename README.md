@@ -1,7 +1,7 @@
 # Asset Label for GLPI
 
-Asset Label adds a direct `Print asset label` action and a `Print label` tab
-to GLPI computers, monitors, network equipment, peripherals, phones, and
+Asset Label adds a compact print icon beside the asset name and a `Print label`
+tab to GLPI computers, monitors, network equipment, peripherals, phones, and
 printers.
 
 The default label contains:
@@ -19,7 +19,7 @@ continue to apply.
 ## Workflow
 
 1. Open an asset.
-2. Select `Print asset label`.
+2. Select the print icon beside the asset name.
 3. Review the immediately usable preview.
 4. Optionally change the label size, fields, or QR setting.
 5. Select `Print`.

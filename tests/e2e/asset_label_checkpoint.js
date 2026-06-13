@@ -26,8 +26,15 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await page.waitForLoadState('networkidle');
   const computerId = Number(new URL(page.url()).searchParams.get('id'));
 
-  const directAction = page.locator('a', { hasText: 'Print asset label' });
+  const directAction = page.locator('a[aria-label="Print asset label"]');
   const directActionVisible = await directAction.isVisible();
+  const directActionInHeader = await directAction.evaluate(
+    element => element.parentElement?.id === 'header-friendlyname',
+  );
+  const directActionIsCompact = await directAction.evaluate(element => {
+    const bounds = element.getBoundingClientRect();
+    return bounds.width <= 40 && bounds.height <= 40;
+  });
   const printTabVisible = (await page.locator('body').innerText()).includes('Print label');
   await directAction.click();
   await page.waitForLoadState('networkidle');
@@ -95,6 +102,8 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
 
   const result = {
     direct_action_visible: directActionVisible,
+    direct_action_in_header: directActionInHeader,
+    direct_action_is_compact: directActionIsCompact,
     tab_visible: printTabVisible,
     defaults_present:
       defaultText.includes(name)

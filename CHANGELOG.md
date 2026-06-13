@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 - 2026-06-13
+
+- Replace the large form action with a compact print icon beside the asset name.
+- Keep an accessible label and tooltip on the icon.
+- Reduce the printed QR footprint to leave more room for asset information.
+
 ## 0.1.0 - 2026-06-13
 
 - Add a direct print action and label tab to common GLPI asset types.

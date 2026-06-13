@@ -1,7 +1,12 @@
-.assetlabel-form-action {
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.75rem 1rem;
+.assetlabel-header-action {
+  display: none;
+  flex: 0 0 auto;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+#header-friendlyname > .assetlabel-header-action {
+  display: inline-flex;
 }
 
 .assetlabel-tab {
@@ -39,11 +44,11 @@
 
 .assetlabel-qr {
   flex: 0 0 auto;
-  height: calc(var(--assetlabel-height) - 4mm);
-  max-height: 27mm;
-  max-width: 27mm;
+  height: 16mm;
+  max-height: calc(var(--assetlabel-height) - 4mm);
+  max-width: calc(var(--assetlabel-height) - 4mm);
   object-fit: contain;
-  width: calc(var(--assetlabel-height) - 4mm);
+  width: 16mm;
 }
 
 .assetlabel-content {

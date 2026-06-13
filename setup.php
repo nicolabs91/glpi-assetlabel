@@ -4,7 +4,7 @@ if (!defined('GLPI_ROOT')) {
     die('Direct access is not allowed');
 }
 
-define('PLUGIN_ASSETLABEL_VERSION', '0.1.0');
+define('PLUGIN_ASSETLABEL_VERSION', '0.1.1');
 define('PLUGIN_ASSETLABEL_MIN_GLPI', '11.0.0');
 define('PLUGIN_ASSETLABEL_MAX_GLPI', '11.99.99');
 
@@ -19,6 +19,7 @@ function plugin_init_assetlabel(): void
     $PLUGIN_HOOKS['csrf_compliant']['assetlabel'] = true;
     $PLUGIN_HOOKS['post_item_form']['assetlabel'] = 'plugin_assetlabel_post_item_form';
     $PLUGIN_HOOKS['add_css']['assetlabel'] = 'css/assetlabel.css';
+    $PLUGIN_HOOKS['add_javascript']['assetlabel'] = 'js/assetlabel.js';
 }
 
 function plugin_version_assetlabel(): array

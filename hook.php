@@ -20,9 +20,9 @@ function plugin_assetlabel_post_item_form(array $params): void
         return;
     }
 
-    echo "<div class='assetlabel-form-action'>";
-    echo "<a class='btn btn-outline-primary' href='" .
-        htmlescape(PluginAssetlabelLabel::getPrintUrl($item)) . "'>";
-    echo "<i class='ti ti-printer'></i> " .
-        htmlescape(__('Print asset label', 'assetlabel')) . '</a></div>';
+    $label = __('Print asset label', 'assetlabel');
+    echo "<a class='assetlabel-header-action btn btn-sm btn-icon btn-ghost-secondary' href='" .
+        htmlescape(PluginAssetlabelLabel::getPrintUrl($item)) . "' aria-label='" .
+        htmlescape($label) . "' title='" . htmlescape($label) . "'>";
+    echo "<i class='ti ti-printer' aria-hidden='true'></i></a>";
 }
