@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3 - 2026-06-13
+
+- Make the preview card follow the selected label width instead of filling the
+  wide content column.
+- Preserve full-width behavior on narrow mobile screens.
+
 ## 0.1.2 - 2026-06-13
 
 - Reduce the preview stage height and padding without changing printed label

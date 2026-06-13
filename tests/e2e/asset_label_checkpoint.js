@@ -54,6 +54,9 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   const previewHeight = await page.locator('.assetlabel-preview-stage').evaluate(
     element => element.getBoundingClientRect().height,
   );
+  const previewWidth = await page.locator('.assetlabel-preview-card').evaluate(
+    element => element.getBoundingClientRect().width,
+  );
 
   await page.uncheck('input[name="serial"]');
   await page.check('input[name="type"]');
@@ -118,6 +121,7 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       && decodedQr.endsWith(`/front/computer.form.php?id=${computerId}`),
     default_label_has_dimensions: defaultSize.width !== 'auto' && defaultSize.height !== 'auto',
     preview_window_is_compact: previewHeight <= 260,
+    preview_window_is_narrow: previewWidth <= 400,
     changed_fields_apply:
       changedText.includes('Computer') && !changedText.includes(serial),
     print_size_updates: printCss.includes('@page{size:50mm 25mm'),
