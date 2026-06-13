@@ -116,6 +116,8 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       defaultText.includes(name)
       && defaultText.includes(assetNumber)
       && defaultText.includes(serial),
+    serial_label_is_abbreviated:
+      defaultText.includes('S/N') && !defaultText.includes('Serial number'),
     qr_is_png_data_uri: qrSource?.startsWith('data:image/png;base64,') || false,
     qr_opens_exact_asset:
       /^https?:\/\//.test(decodedQr || '')

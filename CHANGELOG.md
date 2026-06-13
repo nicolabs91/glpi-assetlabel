@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 - 2026-06-13
+
+- Abbreviate `Serial number` to `S/N` on the printed label while keeping the
+  full wording in the settings.
+
 ## 0.1.4 - 2026-06-13
 
 - Update fields, QR visibility, dimensions, print page size, and the shareable

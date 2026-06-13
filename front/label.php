@@ -120,8 +120,9 @@ foreach (array_keys($fieldLabels) as $field) {
         echo "<div class='assetlabel-name" . $hidden . "' data-assetlabel-field='" .
             htmlescape($field) . "'>" . htmlescape($value) . '</div>';
     } else {
+        $printLabel = $field === 'serial' ? 'S/N' : $fieldLabels[$field];
         echo "<div class='assetlabel-field" . $hidden . "' data-assetlabel-field='" .
-            htmlescape($field) . "'><span>" . htmlescape($fieldLabels[$field]) .
+            htmlescape($field) . "'><span>" . htmlescape($printLabel) .
             '</span><strong>' . htmlescape($value) . '</strong></div>';
     }
     if ($hidden === '') {
