@@ -4,8 +4,12 @@ include '../../../inc/includes.php';
 
 global $CFG_GLPI;
 
-$itemtype = (string) ($_GET['itemtype'] ?? '');
-$itemsId = (int) ($_GET['items_id'] ?? 0);
+$itemtypeInput = $_GET['itemtype'] ?? '';
+$itemsIdInput = $_GET['items_id'] ?? 0;
+$itemtype = is_string($itemtypeInput) ? $itemtypeInput : '';
+$itemsId = is_scalar($itemsIdInput) && is_numeric($itemsIdInput)
+    ? (int) $itemsIdInput
+    : 0;
 if (!PluginAssetlabelLabel::supports($itemtype) || $itemsId <= 0) {
     Html::displayErrorAndDie(__('Invalid asset.', 'assetlabel'), true);
 }
@@ -33,7 +37,7 @@ echo "<main class='container-fluid assetlabel-page'>";
 echo "<div class='assetlabel-toolbar d-flex align-items-center gap-2 mb-3'>";
 echo '<div><h1 class="h2 mb-1">' . htmlescape(__('Print asset label', 'assetlabel')) .
     '</h1><p class="text-muted mb-0">' . htmlescape($title) . '</p></div>';
-echo "<button class='btn btn-primary ms-auto' type='button' onclick='window.print()'>";
+echo "<button class='btn btn-primary ms-auto assetlabel-print-button' type='button'>";
 echo "<i class='ti ti-printer'></i> " . htmlescape(__('Print')) . '</button>';
 echo "<a class='btn btn-outline-secondary' href='" .
     htmlescape($item->getFormURLWithID($itemsId)) . "'>" . htmlescape(__('Back')) . '</a>';

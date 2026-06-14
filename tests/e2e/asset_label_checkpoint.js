@@ -1,6 +1,6 @@
 const jsQR = require('jsqr');
 const { PNG } = require('pngjs');
-const { launchBrowser, login } = require('./helpers');
+const { launchBrowser, login, purgeComputer } = require('./helpers');
 
 const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
 
@@ -39,15 +39,15 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await directAction.click();
   await page.waitForLoadState('networkidle');
 
-  const defaultText = await page.locator('.assetlabel-label').innerText();
-  const qrSource = await page.locator('.assetlabel-qr').getAttribute('src');
+  const defaultText = await page.locator('main .assetlabel-label').innerText();
+  const qrSource = await page.locator('main .assetlabel-qr').getAttribute('src');
   const qrPng = PNG.sync.read(Buffer.from(qrSource.split(',')[1], 'base64'));
   const decodedQr = jsQR(
     new Uint8ClampedArray(qrPng.data),
     qrPng.width,
     qrPng.height,
   )?.data;
-  const defaultSize = await page.locator('.assetlabel-label').evaluate(element => ({
+  const defaultSize = await page.locator('main .assetlabel-label').evaluate(element => ({
     width: getComputedStyle(element).width,
     height: getComputedStyle(element).height,
   }));
@@ -64,10 +64,16 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await page.selectOption('select[name="format"]', '50x25');
   await page.waitForFunction(() => (
     location.search.includes('format=50x25')
-    && document.querySelector('#assetlabel-page-size')?.textContent.includes('50mm 25mm')
+    && getComputedStyle(document.documentElement)
+      .getPropertyValue('--assetlabel-width').trim() === '50mm'
+    && getComputedStyle(document.documentElement)
+      .getPropertyValue('--assetlabel-height').trim() === '25mm'
   ));
-  const changedText = await page.locator('.assetlabel-label').innerText();
+  const changedText = await page.locator('main .assetlabel-label').innerText();
   const printCss = await page.locator('#page style').innerText();
+  const usesNativePrintPaper = await page.evaluate(() => (
+    document.documentElement.classList.contains('assetlabel-safari-print')
+  ));
   const liveUrl = page.url();
 
   await page.selectOption('select[name="format"]', 'custom');
@@ -75,7 +81,17 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await page.fill('input[name="height"]', '40');
   await page.uncheck('input[name="qr"]');
   const customCss = await page.locator('#page style').innerText();
-  const qrVisible = await page.locator('.assetlabel-qr').isVisible();
+  const qrVisible = await page.locator('main .assetlabel-qr').isVisible();
+  await page.evaluate(() => {
+    window.__assetlabelPrintCalls = 0;
+    window.print = () => {
+      window.__assetlabelPrintCalls += 1;
+    };
+  });
+  await page.locator('.assetlabel-print-button').click();
+  const printButtonCallsPrint = await page.evaluate(
+    () => window.__assetlabelPrintCalls === 1,
+  );
 
   await page.goto(
     `${baseUrl}/plugins/assetlabel/front/label.php?itemtype=Computer`
@@ -83,10 +99,36 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     { waitUntil: 'networkidle' },
   );
   const boundedCss = await page.locator('#page style').innerText();
+  const printRoot = page.locator('body > .assetlabel-print-root');
+  const printRootIsDirectBodyChild = await printRoot.count() === 1;
+  const printRootTextMatchesPreview = await page.evaluate(() => (
+    document.querySelector('body > .assetlabel-print-root .assetlabel-label')
+      ?.textContent
+    === document.querySelector('main .assetlabel-label')?.textContent
+  ));
   await page.emulateMedia({ media: 'print' });
   const printView = {
-    labelVisible: await page.locator('.assetlabel-label').isVisible(),
+    labelVisible: await printRoot.locator('.assetlabel-label').isVisible(),
     toolbarVisible: await page.locator('.assetlabel-toolbar').isVisible(),
+    labelAtPageOrigin: await printRoot.locator('.assetlabel-label').evaluate(element => {
+      const bounds = element.getBoundingClientRect();
+      return bounds.left === 0 && bounds.top === 0;
+    }),
+    visibleOutsideLabel: await page.locator('body').evaluate(body => (
+      [...body.querySelectorAll('*')].filter(element => {
+        if (element.matches(
+          '.assetlabel-print-root, .assetlabel-print-root *',
+        )) {
+          return false;
+        }
+        const style = getComputedStyle(element);
+        const bounds = element.getBoundingClientRect();
+        return style.display !== 'none'
+          && style.visibility !== 'hidden'
+          && bounds.width > 0
+          && bounds.height > 0;
+      }).length
+    )),
   };
   await page.emulateMedia({ media: 'screen' });
 
@@ -100,20 +142,9 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       + '?itemtype=Computer&items_id=416&submitted=1&manufacturer=1',
     { waitUntil: 'networkidle' },
   );
-  const manufacturerText = await page.locator('.assetlabel-label').innerText();
+  const manufacturerText = await page.locator('main .assetlabel-label').innerText();
 
-  await page.goto(`${baseUrl}/front/computer.form.php?id=${computerId}`, {
-    waitUntil: 'networkidle',
-  });
-  const token = await page.locator('input[name="_glpi_csrf_token"]').last().inputValue();
-  const cleanup = await page.request.post(`${baseUrl}/front/computer.form.php`, {
-    form: {
-      id: String(computerId),
-      purge: '1',
-      _glpi_csrf_token: token,
-    },
-    maxRedirects: 0,
-  });
+  const cleanup = await purgeComputer(page, computerId);
 
   const result = {
     direct_action_visible: directActionVisible,
@@ -139,13 +170,27 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     preview_window_is_narrow: previewWidth <= 400,
     changed_fields_apply:
       changedText.includes('Computer') && !changedText.includes(serial),
-    print_size_updates: printCss.includes('@page{size:50mm 25mm'),
+    print_size_updates: usesNativePrintPaper
+      ? printCss.includes('@page{margin:0}')
+        && !printCss.includes('@page{size:')
+      : printCss.includes('@page{size:50mm 25mm'),
     preview_updates_without_reload:
       liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
-    custom_size_updates: customCss.includes('@page{size:80mm 40mm'),
-    custom_size_is_bounded: boundedCss.includes('@page{size:150mm 10mm'),
+    custom_size_updates: usesNativePrintPaper
+      ? customCss.includes('--assetlabel-width:80mm;--assetlabel-height:40mm')
+      : customCss.includes('@page{size:80mm 40mm'),
+    custom_size_is_bounded: usesNativePrintPaper
+      ? boundedCss.includes('--assetlabel-width:150mm;--assetlabel-height:10mm')
+      : boundedCss.includes('@page{size:150mm 10mm'),
     qr_can_be_disabled: !qrVisible,
-    print_view_is_clean: printView.labelVisible && !printView.toolbarVisible,
+    print_button_calls_print: printButtonCallsPrint,
+    print_view_is_clean:
+      printView.labelVisible
+      && !printView.toolbarVisible
+      && printView.labelAtPageOrigin
+      && printView.visibleOutsideLabel === 0,
+    print_root_is_direct_body_child: printRootIsDirectBodyChild,
+    print_root_matches_live_preview: printRootTextMatchesPreview,
     invalid_item_rejected: invalid.status() >= 400,
     cleanup_status: cleanup.status(),
     browser_errors: errors,

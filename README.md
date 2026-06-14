@@ -46,9 +46,11 @@ Install the browser dependencies with `npm install`, then run:
 ```console
 npm run test:e2e
 npm run test:firefox
+npm run test:webkit
 ```
 
-The checkpoints cover creation and cleanup of a real asset, the direct form
-action, the asset tab, default fields, QR generation, field toggles, print
-dimensions, rejection of unsupported item types, browser errors, and WCAG
-2.1 A/AA accessibility.
+The checkpoints cover creation and cleanup of real assets, the direct form
+action, the asset tab, default fields, QR generation, repeated field toggles,
+all presets, custom-dimension bounds, malformed input, state after reload,
+long and special text, the no-JavaScript fallback, anonymous access, print
+media, browser errors, and WCAG 2.1 A/AA accessibility.

@@ -1,4 +1,6 @@
 (() => {
+  let preparePrintRoot = null;
+
   const movePrintAction = () => {
     const action = document.querySelector('.assetlabel-header-action');
     const assetName = document.querySelector('#header-friendlyname');
@@ -27,6 +29,22 @@
     const width = form.elements.namedItem('width');
     const height = form.elements.namedItem('height');
     const qr = form.elements.namedItem('qr');
+    const usesNativePrintPaper = /^((?!chrome|chromium|android).)*safari/i
+      .test(navigator.userAgent);
+    document.documentElement.classList.toggle(
+      'assetlabel-safari-print',
+      usesNativePrintPaper,
+    );
+    preparePrintRoot = () => {
+      let printRoot = document.querySelector('body > .assetlabel-print-root');
+      if (!printRoot) {
+        printRoot = document.createElement('div');
+        printRoot.className = 'assetlabel-print-root';
+        printRoot.setAttribute('aria-hidden', 'true');
+        document.body.append(printRoot);
+      }
+      printRoot.replaceChildren(label.cloneNode(true));
+    };
 
     const clamp = (value, minimum, maximum) => (
       Math.max(minimum, Math.min(maximum, Number(value) || minimum))
@@ -45,7 +63,9 @@
       document.documentElement.style.setProperty('--assetlabel-height', `${labelHeight}mm`);
       pageSize.textContent = `:root{--assetlabel-width:${labelWidth}mm;`
         + `--assetlabel-height:${labelHeight}mm}`
-        + `@media print{@page{size:${labelWidth}mm ${labelHeight}mm;margin:0}}`;
+        + (usesNativePrintPaper
+          ? '@media print{@page{margin:0}}'
+          : `@media print{@page{size:${labelWidth}mm ${labelHeight}mm;margin:0}}`);
 
       form.querySelectorAll('input[type="checkbox"][name]').forEach(input => {
         if (input.name === 'qr') {
@@ -61,6 +81,7 @@
         .some(element => !element.classList.contains('d-none'));
       document.querySelector('.assetlabel-empty')
         ?.classList.toggle('d-none', visibleFields);
+      preparePrintRoot();
       syncUrl();
     };
 
@@ -77,6 +98,9 @@
     form.querySelectorAll('input[type="checkbox"]').forEach(input => {
       input.addEventListener('change', update);
     });
+    document.querySelector('.assetlabel-print-button')
+      ?.addEventListener('click', () => window.print());
+    window.addEventListener('beforeprint', () => preparePrintRoot?.());
     update();
   };
 

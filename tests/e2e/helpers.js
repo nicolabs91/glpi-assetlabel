@@ -1,9 +1,9 @@
 const fs = require('fs');
-const { chromium, firefox } = require('playwright');
+const { chromium, firefox, webkit } = require('playwright');
 
 async function launchBrowser() {
   const browserName = process.env.BROWSER || 'chromium';
-  const browserType = { chromium, firefox }[browserName];
+  const browserType = { chromium, firefox, webkit }[browserName];
   if (!browserType) {
     throw new Error(`Unsupported BROWSER value: ${browserName}`);
   }
@@ -27,4 +27,58 @@ async function login(page) {
   await page.waitForLoadState('networkidle');
 }
 
-module.exports = { launchBrowser, login };
+async function createComputer(page, fields = {}) {
+  const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
+  await page.goto(`${baseUrl}/front/computer.form.php?id=-1`, {
+    waitUntil: 'networkidle',
+  });
+  await page.fill('input[name="name"]', fields.name || `LABEL-PC-${Date.now()}`);
+  if (fields.assetNumber) {
+    await page.fill('input[name="otherserial"]', fields.assetNumber);
+  }
+  if (fields.serial) {
+    await page.fill('input[name="serial"]', fields.serial);
+  }
+  await page.locator('button[name="add"], input[name="add"]').click();
+  await page.waitForLoadState('networkidle');
+  return Number(new URL(page.url()).searchParams.get('id'));
+}
+
+async function purgeComputer(page, computerId) {
+  const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
+  await page.goto(`${baseUrl}/front/computer.form.php?id=${computerId}`, {
+    waitUntil: 'networkidle',
+  });
+  let token = await page.locator('input[name="_glpi_csrf_token"]').last().inputValue();
+  const deleted = await page.request.post(`${baseUrl}/front/computer.form.php`, {
+    form: {
+      id: String(computerId),
+      delete: '1',
+      _glpi_csrf_token: token,
+    },
+    maxRedirects: 0,
+  });
+  if (![200, 302, 303].includes(deleted.status())) {
+    return deleted;
+  }
+
+  await page.goto(`${baseUrl}/front/computer.form.php?id=${computerId}`, {
+    waitUntil: 'networkidle',
+  });
+  token = await page.locator('input[name="_glpi_csrf_token"]').last().inputValue();
+  return page.request.post(`${baseUrl}/front/computer.form.php`, {
+    form: {
+      id: String(computerId),
+      purge: '1',
+      _glpi_csrf_token: token,
+    },
+    maxRedirects: 0,
+  });
+}
+
+module.exports = {
+  createComputer,
+  launchBrowser,
+  login,
+  purgeComputer,
+};

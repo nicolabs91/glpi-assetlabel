@@ -1,5 +1,5 @@
 const AxeBuilder = require('@axe-core/playwright').default;
-const { launchBrowser, login } = require('./helpers');
+const { launchBrowser, login, purgeComputer } = require('./helpers');
 
 const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
 
@@ -27,18 +27,7 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
     .analyze();
 
-  await page.goto(`${baseUrl}/front/computer.form.php?id=${computerId}`, {
-    waitUntil: 'networkidle',
-  });
-  const token = await page.locator('input[name="_glpi_csrf_token"]').last().inputValue();
-  const cleanup = await page.request.post(`${baseUrl}/front/computer.form.php`, {
-    form: {
-      id: String(computerId),
-      purge: '1',
-      _glpi_csrf_token: token,
-    },
-    maxRedirects: 0,
-  });
+  const cleanup = await purgeComputer(page, computerId);
 
   const output = {
     violations: results.violations.map(violation => ({

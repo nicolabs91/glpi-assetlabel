@@ -90,48 +90,89 @@
   font-size: 8pt;
 }
 
+.assetlabel-print-root {
+  display: none;
+}
+
 @media print {
+  html,
   body {
     background: #fff !important;
+    height: calc(var(--assetlabel-height) - 0.2mm) !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    width: calc(var(--assetlabel-width) - 0.2mm) !important;
   }
 
-  body > :not(.page),
-  .assetlabel-toolbar,
-  .assetlabel-controls,
-  .assetlabel-screen-only,
-  header,
-  nav,
-  footer {
+  body > * {
     display: none !important;
   }
 
-  .page,
-  .page-wrapper,
-  .page-body,
-  .container-xl,
-  .assetlabel-page,
-  .assetlabel-workspace,
-  .assetlabel-preview-card,
-  .assetlabel-preview-card .card-body,
-  .assetlabel-preview-stage {
+  body > .assetlabel-print-root {
     background: #fff !important;
-    border: 0 !important;
-    box-shadow: none !important;
     display: block !important;
+    height: calc(var(--assetlabel-height) - 0.2mm) !important;
+    left: 0;
     margin: 0 !important;
-    min-height: 0 !important;
+    overflow: hidden !important;
     padding: 0 !important;
-    width: auto !important;
+    position: absolute;
+    top: 0;
+    width: calc(var(--assetlabel-width) - 0.2mm) !important;
   }
 
-  .assetlabel-workspace > .col-xl-8 {
-    padding: 0 !important;
-    width: auto !important;
+  .assetlabel-print-root .assetlabel-label {
+    border: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    width: 100% !important;
   }
 
-  .assetlabel-label {
-    border: 0;
-    margin: 0;
+  .assetlabel-safari-print body > .assetlabel-print-root {
+    height: calc(var(--assetlabel-height) * 2) !important;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-label {
+    display: block;
+    height: calc(var(--assetlabel-height) * 2) !important;
+    padding: 0;
+    position: relative;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-qr {
+    height: auto;
+    left: 7%;
+    max-height: 48%;
+    max-width: 22%;
+    position: absolute;
+    top: 30%;
+    width: 22%;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-content {
+    left: 34%;
+    position: absolute;
+    right: 7%;
+    top: 32%;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-name {
+    font-size: 12pt;
+    margin-bottom: 1mm;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field {
+    font-size: 8.5pt;
+    grid-template-columns: minmax(14mm, auto) 1fr;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field span {
+    padding-right: 1mm;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-empty {
+    font-size: 10pt;
   }
 }
 

@@ -105,7 +105,8 @@ final class PluginAssetlabelLabel extends CommonGLPI
             '50x25' => [50.0, 25.0],
             '70x37' => [70.0, 37.0],
         ];
-        $format = (string) ($input['format'] ?? '62x29');
+        $formatInput = $input['format'] ?? '62x29';
+        $format = is_string($formatInput) ? $formatInput : 'custom';
         if (isset($formats[$format])) {
             [$width, $height] = $formats[$format];
         } else {
