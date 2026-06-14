@@ -76,6 +76,10 @@
   line-height: 1.15;
 }
 
+.assetlabel-field-value-only {
+  grid-template-columns: 1fr;
+}
+
 .assetlabel-field span {
   color: #4b5563;
   padding-right: 1mm;
@@ -165,6 +169,10 @@
   .assetlabel-safari-print .assetlabel-print-root .assetlabel-field {
     font-size: 8.5pt;
     grid-template-columns: minmax(14mm, auto) 1fr;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field-value-only {
+    grid-template-columns: 1fr;
   }
 
   .assetlabel-safari-print .assetlabel-print-root .assetlabel-field span {

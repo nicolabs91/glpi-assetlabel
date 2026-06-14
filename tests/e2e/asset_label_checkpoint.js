@@ -139,10 +139,16 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
 
   await page.goto(
     `${baseUrl}/plugins/assetlabel/front/label.php`
-      + '?itemtype=Computer&items_id=416&submitted=1&manufacturer=1',
+      + '?itemtype=Computer&items_id=416&submitted=1&model=1&manufacturer=1',
     { waitUntil: 'networkidle' },
   );
-  const manufacturerText = await page.locator('main .assetlabel-label').innerText();
+  const productText = await page.locator('main .assetlabel-label').innerText();
+  const productValuesHaveNoPrefix = (
+    await page.locator(
+      'main [data-assetlabel-field="model"] span, '
+        + 'main [data-assetlabel-field="manufacturer"] span',
+    ).count() === 0
+  );
 
   const cleanup = await purgeComputer(page, computerId);
 
@@ -157,10 +163,13 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       && defaultText.includes(serial),
     serial_label_is_abbreviated:
       defaultText.includes('S/N') && !defaultText.includes('Serial number'),
-    manufacturer_label_is_abbreviated:
-      manufacturerText.includes('MFR')
-      && manufacturerText.includes('Dell')
-      && !manufacturerText.includes('Manufacturer'),
+    model_and_manufacturer_values_have_no_prefix:
+      productText.includes('Dell Latitude 5440')
+      && productText.includes('Dell')
+      && !productText.includes('Model')
+      && !productText.includes('MFR')
+      && !productText.includes('Manufacturer')
+      && productValuesHaveNoPrefix,
     qr_is_png_data_uri: qrSource?.startsWith('data:image/png;base64,') || false,
     qr_opens_exact_asset:
       /^https?:\/\//.test(decodedQr || '')
