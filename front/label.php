@@ -124,17 +124,8 @@ foreach (array_keys($fieldLabels) as $field) {
         echo "<div class='assetlabel-name" . $hidden . "' data-assetlabel-field='" .
             htmlescape($field) . "'>" . htmlescape($value) . '</div>';
     } else {
-        $valueOnly = in_array($field, ['model', 'manufacturer'], true);
-        $printLabel = match ($field) {
-            'serial' => 'S/N',
-            default => $fieldLabels[$field],
-        };
-        echo "<div class='assetlabel-field" .
-            ($valueOnly ? ' assetlabel-field-value-only' : '') . $hidden .
+        echo "<div class='assetlabel-field assetlabel-field-value-only" . $hidden .
             "' data-assetlabel-field='" . htmlescape($field) . "'>";
-        if (!$valueOnly) {
-            echo '<span>' . htmlescape($printLabel) . '</span>';
-        }
         echo '<strong>' . htmlescape($value) . '</strong></div>';
     }
     if ($hidden === '') {

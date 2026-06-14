@@ -40,6 +40,9 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   await page.waitForLoadState('networkidle');
 
   const defaultText = await page.locator('main .assetlabel-label').innerText();
+  const defaultPrefixCount = await page.locator(
+    'main .assetlabel-field span',
+  ).count();
   const qrSource = await page.locator('main .assetlabel-qr').getAttribute('src');
   const qrPng = PNG.sync.read(Buffer.from(qrSource.split(',')[1], 'base64'));
   const decodedQr = jsQR(
@@ -70,6 +73,9 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       .getPropertyValue('--assetlabel-height').trim() === '25mm'
   ));
   const changedText = await page.locator('main .assetlabel-label').innerText();
+  const changedPrefixCount = await page.locator(
+    'main .assetlabel-field span',
+  ).count();
   const printCss = await page.locator('#page style').innerText();
   const usesNativePrintPaper = await page.evaluate(() => (
     document.documentElement.classList.contains('assetlabel-safari-print')
@@ -143,12 +149,9 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     { waitUntil: 'networkidle' },
   );
   const productText = await page.locator('main .assetlabel-label').innerText();
-  const productValuesHaveNoPrefix = (
-    await page.locator(
-      'main [data-assetlabel-field="model"] span, '
-        + 'main [data-assetlabel-field="manufacturer"] span',
-    ).count() === 0
-  );
+  const productPrefixCount = await page.locator(
+    'main .assetlabel-field span',
+  ).count();
 
   const cleanup = await purgeComputer(page, computerId);
 
@@ -161,15 +164,20 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       defaultText.includes(name)
       && defaultText.includes(assetNumber)
       && defaultText.includes(serial),
-    serial_label_is_abbreviated:
-      defaultText.includes('S/N') && !defaultText.includes('Serial number'),
-    model_and_manufacturer_values_have_no_prefix:
-      productText.includes('Dell Latitude 5440')
+    all_values_have_no_prefix:
+      defaultPrefixCount === 0
+      && changedPrefixCount === 0
+      && productPrefixCount === 0
+      && !defaultText.includes('Asset number')
+      && !defaultText.includes('S/N')
+      && !defaultText.includes('Serial number')
+      && !changedText.includes('Asset type')
+      && productText.includes('Dell Latitude 5440')
       && productText.includes('Dell')
       && !productText.includes('Model')
       && !productText.includes('MFR')
       && !productText.includes('Manufacturer')
-      && productValuesHaveNoPrefix,
+      && !productText.includes('Location'),
     qr_is_png_data_uri: qrSource?.startsWith('data:image/png;base64,') || false,
     qr_opens_exact_asset:
       /^https?:\/\//.test(decodedQr || '')

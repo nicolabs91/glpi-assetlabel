@@ -7,7 +7,7 @@
 - Add bounded custom label dimensions.
 - Include asset name, asset number, serial number, and model by default.
 - Add optional asset type, manufacturer, and location fields.
-- Show model and manufacturer values without redundant label prefixes.
+- Show label values without redundant field-name prefixes.
 - Add an optional QR code that opens the exact GLPI asset.
 - Keep preview fields, QR visibility, dimensions, print page size, and the
   shareable settings URL synchronized without reloading.
