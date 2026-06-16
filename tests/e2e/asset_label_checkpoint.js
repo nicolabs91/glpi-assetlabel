@@ -82,25 +82,6 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   ));
   const liveUrl = page.url();
 
-  await page.selectOption('select[name="orientation"]', 'portrait');
-  await page.waitForFunction(() => (
-    location.search.includes('orientation=portrait')
-    && getComputedStyle(document.documentElement)
-      .getPropertyValue('--assetlabel-width').trim() === '25mm'
-    && getComputedStyle(document.documentElement)
-      .getPropertyValue('--assetlabel-height').trim() === '50mm'
-    && document.querySelector('main .assetlabel-label')
-      .getBoundingClientRect().width
-      < document.querySelector('main .assetlabel-label')
-        .getBoundingClientRect().height
-  ));
-  const portraitCss = await page.locator('#page style').innerText();
-  const portraitPreviewIsVisiblyTall = await page.locator('main .assetlabel-label')
-    .evaluate(element => {
-      const bounds = element.getBoundingClientRect();
-      return bounds.width < bounds.height;
-    });
-
   await page.selectOption('select[name="format"]', 'custom');
   await page.fill('input[name="width"]', '80');
   await page.fill('input[name="height"]', '40');
@@ -212,11 +193,6 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       : printCss.includes('@page{size:50mm 25mm'),
     preview_updates_without_reload:
       liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
-    orientation_updates_preview_and_print: usesNativePrintPaper
-      ? portraitCss.includes('--assetlabel-width:25mm;--assetlabel-height:50mm')
-        && portraitPreviewIsVisiblyTall
-      : portraitCss.includes('@page{size:25mm 50mm')
-        && portraitPreviewIsVisiblyTall,
     custom_size_updates: usesNativePrintPaper
       ? customCss.includes('--assetlabel-width:80mm;--assetlabel-height:40mm')
       : customCss.includes('@page{size:80mm 40mm'),

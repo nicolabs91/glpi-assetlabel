@@ -44,7 +44,6 @@ function allTrue(result, ignored = []) {
     ));
 
     const presetResults = {};
-    await page.selectOption('select[name="orientation"]', 'landscape');
     for (const [format, dimensions] of Object.entries({
       '62x29': ['62mm', '29mm'],
       '50x25': ['50mm', '25mm'],
@@ -64,20 +63,6 @@ function allTrue(result, ignored = []) {
           .getPropertyValue('--assetlabel-height').trim() === expected[1]
       ), dimensions);
     }
-    await page.selectOption('select[name="orientation"]', 'portrait');
-    await page.selectOption('select[name="format"]', '70x37');
-    await page.waitForFunction(() => (
-      getComputedStyle(document.documentElement)
-        .getPropertyValue('--assetlabel-width').trim() === '37mm'
-      && getComputedStyle(document.documentElement)
-        .getPropertyValue('--assetlabel-height').trim() === '70mm'
-    ));
-    const portraitPresetSwapsDimensions = await page.evaluate(() => (
-      getComputedStyle(document.documentElement)
-        .getPropertyValue('--assetlabel-width').trim() === '37mm'
-      && getComputedStyle(document.documentElement)
-        .getPropertyValue('--assetlabel-height').trim() === '70mm'
-    ));
 
     const fieldCheckboxes = page.locator(
       '#assetlabel-settings input[type="checkbox"]:not([name="qr"])',
@@ -108,7 +93,6 @@ function allTrue(result, ignored = []) {
     const stateSurvivesReload = (
       await page.inputValue('input[name="width"]') === '33.5'
       && await page.inputValue('input[name="height"]') === '17.5'
-      && await page.inputValue('select[name="orientation"]') === 'landscape'
       && await page.locator('input[name="name"]').isChecked()
       && !(await page.locator('input[name="serial"]').isChecked())
       && !(await page.locator('input[name="qr"]').isChecked())
@@ -119,7 +103,6 @@ function allTrue(result, ignored = []) {
       ['format=custom&width=1e3&height=999', ['150mm', '100mm']],
       ['format%5B%5D=custom&width%5B%5D=99&height%5B%5D=99', ['20mm', '10mm']],
       ['format=unknown&width=20.5&height=10.5', ['20.5mm', '10.5mm']],
-      ['format=62x29&orientation=portrait', ['29mm', '62mm']],
     ];
     const malformedInputsAreBounded = [];
     for (const [query, expected] of malformedCases) {
@@ -190,7 +173,6 @@ function allTrue(result, ignored = []) {
       special_text_is_escaped: escapedTextIsLiteral,
       long_text_has_no_horizontal_overflow: contentStaysInsideLabel,
       every_preset_updates_live: Object.values(presetResults).every(Boolean),
-      portrait_preset_swaps_dimensions: portraitPresetSwapsDimensions,
       repeated_toggle_loop_is_stable:
         emptyStateVisible && emptyStateClears && oneFieldVisible,
       settings_survive_reload: stateSurvivesReload,

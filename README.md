@@ -21,13 +21,12 @@ continue to apply.
 1. Open an asset.
 2. Select the print icon beside the asset name.
 3. Review the immediately usable preview.
-4. Optionally change the label size, orientation, fields, or QR setting; the
-   preview updates immediately without reloading the page.
+4. Optionally change the label size, fields, or QR setting; the preview updates
+   immediately without reloading the page.
 5. Select `Print`.
 
-Supported presets are 62 x 29 mm, 50 x 25 mm, and 70 x 37 mm. Each preset can
-be used in landscape or portrait orientation. Custom sizes are limited to safe
-printable ranges.
+Supported presets are 62 x 29 mm, 50 x 25 mm, and 70 x 37 mm. Custom sizes are
+limited to safe printable ranges.
 
 ## Installation
 

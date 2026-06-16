@@ -107,20 +107,12 @@ final class PluginAssetlabelLabel extends CommonGLPI
         ];
         $formatInput = $input['format'] ?? '62x29';
         $format = is_string($formatInput) ? $formatInput : 'custom';
-        $orientationInput = $input['orientation'] ?? 'landscape';
-        $orientation = $orientationInput === 'portrait' ? 'portrait' : 'landscape';
         if (isset($formats[$format])) {
             [$width, $height] = $formats[$format];
         } else {
             $format = 'custom';
             $width = self::clampDimension($input['width'] ?? 62, 20, 150);
             $height = self::clampDimension($input['height'] ?? 29, 10, 100);
-        }
-        if (
-            ($orientation === 'portrait' && $width > $height)
-            || ($orientation === 'landscape' && $width < $height)
-        ) {
-            [$width, $height] = [$height, $width];
         }
 
         $fields = [];
@@ -135,7 +127,6 @@ final class PluginAssetlabelLabel extends CommonGLPI
 
         return [
             'format' => $format,
-            'orientation' => $orientation,
             'width' => $width,
             'height' => $height,
             'fields' => $fields,

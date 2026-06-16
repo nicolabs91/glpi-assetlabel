@@ -26,7 +26,6 @@
       '70x37': [70, 37],
     };
     const format = form.elements.namedItem('format');
-    const orientation = form.elements.namedItem('orientation');
     const width = form.elements.namedItem('width');
     const height = form.elements.namedItem('height');
     const qr = form.elements.namedItem('qr');
@@ -50,19 +49,6 @@
     const clamp = (value, minimum, maximum) => (
       Math.max(minimum, Math.min(maximum, Number(value) || minimum))
     );
-
-    const dimensionsForOrientation = (dimensions) => {
-      const ordered = [...dimensions].sort((a, b) => b - a);
-      return orientation.value === 'portrait'
-        ? [ordered[1], ordered[0]]
-        : [ordered[0], ordered[1]];
-    };
-
-    const syncOrientationFromDimensions = () => {
-      orientation.value = Number(width.value) > Number(height.value)
-        ? 'landscape'
-        : 'portrait';
-    };
 
     const syncUrl = () => {
       const query = new URLSearchParams(new FormData(form));
@@ -101,17 +87,12 @@
 
     format.addEventListener('change', () => {
       if (presets[format.value]) {
-        [width.value, height.value] = dimensionsForOrientation(presets[format.value]);
+        [width.value, height.value] = presets[format.value];
       }
-      update();
-    });
-    orientation.addEventListener('change', () => {
-      [width.value, height.value] = dimensionsForOrientation([width.value, height.value]);
       update();
     });
     [width, height].forEach(input => input.addEventListener('input', () => {
       format.value = 'custom';
-      syncOrientationFromDimensions();
       update();
     }));
     form.querySelectorAll('input[type="checkbox"]').forEach(input => {

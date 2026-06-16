@@ -4,7 +4,6 @@
 
 - Add a compact print action and label tab to common GLPI asset types.
 - Add immediate label preview with 62 x 29, 50 x 25, and 70 x 37 mm presets.
-- Add landscape and portrait orientation selection.
 - Add bounded custom label dimensions.
 - Include asset name, asset number, serial number, and model by default.
 - Add optional asset type, manufacturer, and location fields.
