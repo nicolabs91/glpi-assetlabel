@@ -132,9 +132,12 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     rotatedLayoutKeepsContentWide: await printRoot.locator('.assetlabel-label')
       .evaluate(element => {
         const style = getComputedStyle(element);
+        const bounds = element.getBoundingClientRect();
+        const pageBounds = element.parentElement.getBoundingClientRect();
         return style.transform !== 'none'
-          && parseFloat(style.width) > parseFloat(style.height)
-          && element.scrollWidth > element.scrollHeight;
+          && parseFloat(style.width) < parseFloat(style.height)
+          && Math.abs(bounds.width - pageBounds.width) < 1
+          && Math.abs(bounds.height - pageBounds.height) < 1;
       }),
     visibleOutsideLabel: await page.locator('body').evaluate(body => (
       [...body.querySelectorAll('*')].filter(element => {
@@ -206,7 +209,7 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     print_size_updates: usesNativePrintPaper
       ? printCss.includes('@page{margin:0}')
         && !printCss.includes('@page{size:')
-      : printCss.includes('@page{size:25mm 50mm'),
+      : printCss.includes('@page{size:50mm 25mm'),
     preview_updates_without_reload:
       liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
     print_rotation_updates:
@@ -215,10 +218,10 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       && printView.rotatedLayoutKeepsContentWide,
     custom_size_updates: usesNativePrintPaper
       ? customCss.includes('--assetlabel-width:80mm;--assetlabel-height:40mm')
-      : customCss.includes('@page{size:40mm 80mm'),
+      : customCss.includes('@page{size:80mm 40mm'),
     custom_size_is_bounded: usesNativePrintPaper
       ? boundedCss.includes('--assetlabel-width:150mm;--assetlabel-height:10mm')
-      : boundedCss.includes('@page{size:10mm 150mm'),
+      : boundedCss.includes('@page{size:150mm 10mm'),
     qr_can_be_disabled: !qrVisible,
     print_button_calls_print: printButtonCallsPrint,
     print_view_is_clean:

@@ -140,7 +140,7 @@ function allTrue(result, ignored = []) {
     const noJsFallbackWorks = (
       noJsText.includes('Computer')
       && !noJsText.includes(serial)
-      && (await noJsPage.locator('#assetlabel-page-size').innerText()).includes('25mm 50mm')
+      && (await noJsPage.locator('#assetlabel-page-size').innerText()).includes('50mm 25mm')
     );
     await noJsContext.close();
 
