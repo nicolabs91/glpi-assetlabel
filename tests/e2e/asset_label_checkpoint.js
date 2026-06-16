@@ -82,6 +82,12 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
   ));
   const liveUrl = page.url();
 
+  await page.selectOption('select[name="rotation"]', '270');
+  await page.waitForFunction(() => location.search.includes('rotation=270'));
+  await page.selectOption('select[name="rotation"]', '90');
+  await page.waitForFunction(() => location.search.includes('rotation=90'));
+  const rotationUrl = page.url();
+
   await page.selectOption('select[name="format"]', 'custom');
   await page.fill('input[name="width"]', '80');
   await page.fill('input[name="height"]', '40');
@@ -118,8 +124,18 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     toolbarVisible: await page.locator('.assetlabel-toolbar').isVisible(),
     labelAtPageOrigin: await printRoot.locator('.assetlabel-label').evaluate(element => {
       const bounds = element.getBoundingClientRect();
-      return bounds.left === 0 && bounds.top === 0;
+      return Math.abs(bounds.left) < 1 && Math.abs(bounds.top) < 1;
     }),
+    labelIsRotated: await printRoot.evaluate(element => (
+      element.classList.contains('assetlabel-print-rotate-90')
+    )),
+    labelUsesSwappedPrintDimensions: await printRoot.locator('.assetlabel-label')
+      .evaluate(element => {
+        const style = getComputedStyle(element);
+        const bounds = element.getBoundingClientRect();
+        return style.transform !== 'none'
+          && Math.round(bounds.width) > Math.round(bounds.height);
+      }),
     visibleOutsideLabel: await page.locator('body').evaluate(body => (
       [...body.querySelectorAll('*')].filter(element => {
         if (element.matches(
@@ -193,6 +209,10 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
       : printCss.includes('@page{size:50mm 25mm'),
     preview_updates_without_reload:
       liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
+    print_rotation_updates:
+      rotationUrl.includes('rotation=90')
+      && printView.labelIsRotated
+      && printView.labelUsesSwappedPrintDimensions,
     custom_size_updates: usesNativePrintPaper
       ? customCss.includes('--assetlabel-width:80mm;--assetlabel-height:40mm')
       : customCss.includes('@page{size:80mm 40mm'),

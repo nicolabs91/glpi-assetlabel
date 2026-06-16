@@ -64,6 +64,20 @@ foreach ([
         htmlescape($label) . '</option>';
 }
 echo '</select>';
+echo "<label class='form-label' for='assetlabel-rotation'>" .
+    htmlescape(__('Print rotation', 'assetlabel')) . '</label>';
+echo "<select class='form-select mb-3' id='assetlabel-rotation' name='rotation'>";
+foreach ([
+    90 => __('Rotate 90 degrees', 'assetlabel'),
+    270 => __('Rotate 270 degrees', 'assetlabel'),
+    180 => __('Rotate 180 degrees', 'assetlabel'),
+    0 => __('Do not rotate', 'assetlabel'),
+] as $value => $label) {
+    echo "<option value='" . htmlescape((string) $value) . "'" .
+        ($options['rotation'] === $value ? ' selected' : '') . '>' .
+        htmlescape($label) . '</option>';
+}
+echo '</select>';
 echo "<div class='row g-2 mb-3'><div class='col-6'><label class='form-label' for='assetlabel-width'>" .
     htmlescape(__('Width (mm)', 'assetlabel')) . '</label>';
 echo Html::input('width', [

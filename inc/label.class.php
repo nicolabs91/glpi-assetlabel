@@ -129,6 +129,7 @@ final class PluginAssetlabelLabel extends CommonGLPI
             'format' => $format,
             'width' => $width,
             'height' => $height,
+            'rotation' => self::normalizeRotation($input['rotation'] ?? 90),
             'fields' => $fields,
             'qr' => !isset($input['submitted']) || isset($input['qr']),
         ];
@@ -151,6 +152,12 @@ final class PluginAssetlabelLabel extends CommonGLPI
     {
         $number = is_numeric($value) ? (float) $value : $min;
         return max($min, min($max, $number));
+    }
+
+    private static function normalizeRotation(mixed $value): int
+    {
+        $rotation = is_numeric($value) ? (int) $value : 90;
+        return in_array($rotation, [0, 90, 180, 270], true) ? $rotation : 90;
     }
 
     public function getTabNameForItem(CommonGLPI $item, $withtemplate = 0): string

@@ -1,0 +1,210 @@
+.assetlabel-header-action {
+  display: none;
+  flex: 0 0 auto;
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+#header-friendlyname > .assetlabel-header-action {
+  display: inline-flex;
+}
+
+.assetlabel-tab {
+  max-width: 760px;
+}
+
+.assetlabel-tab-summary {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.assetlabel-preview-stage {
+  align-items: center;
+  background: #eef1f4;
+  display: flex;
+  justify-content: center;
+  min-height: 210px;
+  overflow: auto;
+  padding: 1.25rem;
+}
+
+.assetlabel-preview-card {
+  max-width: 100%;
+  width: max(340px, calc(var(--assetlabel-width) + 2.5rem));
+}
+
+.assetlabel-label {
+  align-items: center;
+  background: #fff;
+  border: 1px solid #111827;
+  box-sizing: border-box;
+  color: #111827;
+  display: flex;
+  gap: 2mm;
+  height: var(--assetlabel-height);
+  overflow: hidden;
+  padding: 2mm;
+  width: var(--assetlabel-width);
+}
+
+.assetlabel-qr {
+  flex: 0 0 auto;
+  height: 16mm;
+  max-height: calc(var(--assetlabel-height) - 4mm);
+  max-width: calc(var(--assetlabel-height) - 4mm);
+  object-fit: contain;
+  width: 16mm;
+}
+
+.assetlabel-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.assetlabel-name {
+  font-size: 10pt;
+  font-weight: 700;
+  line-height: 1.1;
+  margin-bottom: 1mm;
+  overflow-wrap: anywhere;
+}
+
+.assetlabel-field {
+  display: grid;
+  font-size: 7pt;
+  grid-template-columns: minmax(14mm, auto) 1fr;
+  line-height: 1.15;
+}
+
+.assetlabel-field-value-only {
+  grid-template-columns: 1fr;
+}
+
+.assetlabel-field span {
+  color: #4b5563;
+  padding-right: 1mm;
+}
+
+.assetlabel-field strong {
+  overflow-wrap: anywhere;
+}
+
+.assetlabel-empty {
+  color: #6b7280;
+  font-size: 8pt;
+}
+
+.assetlabel-print-root {
+  display: none;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    height: calc(var(--assetlabel-height) - 0.2mm) !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    width: calc(var(--assetlabel-width) - 0.2mm) !important;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  body > .assetlabel-print-root {
+    background: #fff !important;
+    display: block !important;
+    height: calc(var(--assetlabel-height) - 0.2mm) !important;
+    left: 0;
+    margin: 0 !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    position: absolute;
+    top: 0;
+    width: calc(var(--assetlabel-width) - 0.2mm) !important;
+  }
+
+  .assetlabel-print-root .assetlabel-label {
+    border: 0 !important;
+    height: 100% !important;
+    margin: 0 !important;
+    transform-origin: top left;
+    width: 100% !important;
+  }
+
+  .assetlabel-print-root.assetlabel-print-rotate-90 .assetlabel-label,
+  .assetlabel-print-root.assetlabel-print-rotate-270 .assetlabel-label {
+    height: var(--assetlabel-width) !important;
+    width: var(--assetlabel-height) !important;
+  }
+
+  .assetlabel-print-root.assetlabel-print-rotate-90 .assetlabel-label {
+    transform: rotate(90deg) translateY(-100%);
+  }
+
+  .assetlabel-print-root.assetlabel-print-rotate-180 .assetlabel-label {
+    transform: rotate(180deg) translate(-100%, -100%);
+  }
+
+  .assetlabel-print-root.assetlabel-print-rotate-270 .assetlabel-label {
+    transform: rotate(270deg) translateX(-100%);
+  }
+
+  .assetlabel-safari-print body > .assetlabel-print-root {
+    height: calc(var(--assetlabel-height) * 2) !important;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-label {
+    display: block;
+    height: calc(var(--assetlabel-height) * 2) !important;
+    padding: 0;
+    position: relative;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-qr {
+    height: auto;
+    left: 7%;
+    max-height: 48%;
+    max-width: 22%;
+    position: absolute;
+    top: 30%;
+    width: 22%;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-content {
+    left: 34%;
+    position: absolute;
+    right: 7%;
+    top: 32%;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-name {
+    font-size: 12pt;
+    margin-bottom: 1mm;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field {
+    font-size: 8.5pt;
+    grid-template-columns: minmax(14mm, auto) 1fr;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field-value-only {
+    grid-template-columns: 1fr;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-field span {
+    padding-right: 1mm;
+  }
+
+  .assetlabel-safari-print .assetlabel-print-root .assetlabel-empty {
+    font-size: 10pt;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .assetlabel-preview-card {
+    width: 100%;
+  }
+}
