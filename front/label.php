@@ -64,6 +64,18 @@ foreach ([
         htmlescape($label) . '</option>';
 }
 echo '</select>';
+echo "<label class='form-label' for='assetlabel-orientation'>" .
+    htmlescape(__('Orientation', 'assetlabel')) . '</label>';
+echo "<select class='form-select mb-3' id='assetlabel-orientation' name='orientation'>";
+foreach ([
+    'landscape' => __('Landscape', 'assetlabel'),
+    'portrait' => __('Portrait', 'assetlabel'),
+] as $value => $label) {
+    echo "<option value='" . htmlescape($value) . "'" .
+        ($options['orientation'] === $value ? ' selected' : '') . '>' .
+        htmlescape($label) . '</option>';
+}
+echo '</select>';
 echo "<div class='row g-2 mb-3'><div class='col-6'><label class='form-label' for='assetlabel-width'>" .
     htmlescape(__('Width (mm)', 'assetlabel')) . '</label>';
 echo Html::input('width', [
