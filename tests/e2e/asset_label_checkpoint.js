@@ -129,12 +129,12 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     labelIsRotated: await printRoot.evaluate(element => (
       element.classList.contains('assetlabel-print-rotate-90')
     )),
-    labelUsesSwappedPrintDimensions: await printRoot.locator('.assetlabel-label')
+    rotatedLayoutKeepsContentWide: await printRoot.locator('.assetlabel-label')
       .evaluate(element => {
         const style = getComputedStyle(element);
-        const bounds = element.getBoundingClientRect();
         return style.transform !== 'none'
-          && Math.round(bounds.width) > Math.round(bounds.height);
+          && parseFloat(style.width) > parseFloat(style.height)
+          && element.scrollWidth > element.scrollHeight;
       }),
     visibleOutsideLabel: await page.locator('body').evaluate(body => (
       [...body.querySelectorAll('*')].filter(element => {
@@ -206,19 +206,19 @@ const baseUrl = process.env.GLPI_URL || 'http://127.0.0.1:8088';
     print_size_updates: usesNativePrintPaper
       ? printCss.includes('@page{margin:0}')
         && !printCss.includes('@page{size:')
-      : printCss.includes('@page{size:50mm 25mm'),
+      : printCss.includes('@page{size:25mm 50mm'),
     preview_updates_without_reload:
       liveUrl.includes('format=50x25') && liveUrl.includes('type=1'),
     print_rotation_updates:
       rotationUrl.includes('rotation=90')
       && printView.labelIsRotated
-      && printView.labelUsesSwappedPrintDimensions,
+      && printView.rotatedLayoutKeepsContentWide,
     custom_size_updates: usesNativePrintPaper
       ? customCss.includes('--assetlabel-width:80mm;--assetlabel-height:40mm')
-      : customCss.includes('@page{size:80mm 40mm'),
+      : customCss.includes('@page{size:40mm 80mm'),
     custom_size_is_bounded: usesNativePrintPaper
       ? boundedCss.includes('--assetlabel-width:150mm;--assetlabel-height:10mm')
-      : boundedCss.includes('@page{size:150mm 10mm'),
+      : boundedCss.includes('@page{size:10mm 150mm'),
     qr_can_be_disabled: !qrVisible,
     print_button_calls_print: printButtonCallsPrint,
     print_view_is_clean:

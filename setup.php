@@ -18,8 +18,8 @@ function plugin_init_assetlabel(): void
 
     $PLUGIN_HOOKS['csrf_compliant']['assetlabel'] = true;
     $PLUGIN_HOOKS['post_item_form']['assetlabel'] = 'plugin_assetlabel_post_item_form';
-    $PLUGIN_HOOKS['add_css']['assetlabel'] = 'css/assetlabel-012l.css';
-    $PLUGIN_HOOKS['add_javascript']['assetlabel'] = 'js/assetlabel-012c.js';
+    $PLUGIN_HOOKS['add_css']['assetlabel'] = 'css/assetlabel-013l.css';
+    $PLUGIN_HOOKS['add_javascript']['assetlabel'] = 'js/assetlabel-013c.js';
 }
 
 function plugin_version_assetlabel(): array

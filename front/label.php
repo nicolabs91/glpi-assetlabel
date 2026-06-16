@@ -24,12 +24,15 @@ $assetUrl = PluginAssetlabelLabel::getAssetUrl($item);
 $title = $details['name'] ?: sprintf(__('%1$s #%2$d'), $details['type'], $itemsId);
 $width = rtrim(rtrim(number_format($options['width'], 2, '.', ''), '0'), '.');
 $height = rtrim(rtrim(number_format($options['height'], 2, '.', ''), '0'), '.');
+$pageWidth = in_array($options['rotation'], [90, 270], true) ? $height : $width;
+$pageHeight = in_array($options['rotation'], [90, 270], true) ? $width : $height;
 
 Html::header(__('Asset label', 'assetlabel'), $_SERVER['PHP_SELF'], 'assets');
 echo '<style id="assetlabel-page-size">';
 echo ':root{--assetlabel-width:' . htmlescape($width) . 'mm;--assetlabel-height:' .
-    htmlescape($height) . 'mm}';
-echo '@media print{@page{size:' . htmlescape($width) . 'mm ' . htmlescape($height) .
+    htmlescape($height) . 'mm;--assetlabel-page-width:' . htmlescape($pageWidth) .
+    'mm;--assetlabel-page-height:' . htmlescape($pageHeight) . 'mm}';
+echo '@media print{@page{size:' . htmlescape($pageWidth) . 'mm ' . htmlescape($pageHeight) .
     'mm;margin:0}}';
 echo '</style>';
 
